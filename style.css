@@ -62,6 +62,12 @@ h1 {
     gap: 15px;
 }
 
+.font-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
 .btn {
     background-color: var(--btn-bg);
     color: var(--text-color);
@@ -241,14 +247,16 @@ main.split-view {
     appearance: none;
     /* Remove default styling */
     -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--muted-text);
-    border-radius: 4px;
+    width: 1.2em;
+    height: 1.2em;
+    border: 0.1em solid var(--muted-text);
+    border-radius: 0.2em;
     background-color: transparent;
     cursor: pointer;
     position: relative;
     transition: all 0.2s;
+    vertical-align: middle;
+    /* Align better with text */
 }
 
 .preview-pane input[type="checkbox"]:checked {
@@ -259,7 +267,7 @@ main.split-view {
 
 .preview-pane input[type="checkbox"]:checked::after {
     content: '✔';
-    font-size: 14px;
+    font-size: 0.9em;
     color: #000;
     /* Black tick on green bg */
     position: absolute;

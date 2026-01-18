@@ -364,20 +364,22 @@ window.addEventListener('click', (event) => {
 });
 
 // --- Font Size Logic ---
-const fontSizeSelect = document.getElementById('font-size-select');
+const fontSizeInput = document.getElementById('font-size-input');
 const FONT_SIZE_KEY = 'online-notes-font-size';
 
 function setFontSize(size) {
-    document.documentElement.style.setProperty('--base-font-size', size);
-    fontSizeSelect.value = size;
-    localStorage.setItem(FONT_SIZE_KEY, size);
+    // Ensure we are working with just the number
+    const sizeVal = parseInt(size);
+    if (!isNaN(sizeVal) && sizeVal >= 8 && sizeVal <= 72) {
+        document.documentElement.style.setProperty('--base-font-size', sizeVal + 'px');
+        fontSizeInput.value = sizeVal;
+        localStorage.setItem(FONT_SIZE_KEY, sizeVal);
 
-    // Tiny delay to allow CSS transition if any, then re-measure lines
-    // In this case, immediate update is usually fine but let's be safe for alignment
-    setTimeout(updateLineNumbers, 0);
+        setTimeout(updateLineNumbers, 0);
+    }
 }
 
-fontSizeSelect.addEventListener('change', (e) => {
+fontSizeInput.addEventListener('input', (e) => {
     setFontSize(e.target.value);
 });
 
@@ -387,7 +389,7 @@ if (savedFontSize) {
     setFontSize(savedFontSize);
 } else {
     // Default
-    setFontSize('16px');
+    setFontSize(16);
 }
 
 // --- Initialization ---

@@ -20,14 +20,11 @@
             <div class="controls">
                 <button id="btn-open" class="btn">Open File</button>
                 <button id="btn-save" class="btn">Save to Disk</button>
-                <select id="font-size-select" class="btn">
-                    <option value="14px">14px</option>
-                    <option value="16px" selected>16px</option>
-                    <option value="18px">18px</option>
-                    <option value="20px">20px</option>
-                    <option value="24px">24px</option>
-                    <option value="28px">28px</option>
-                </select>
+                <div class="font-control">
+                    <input type="number" id="font-size-input" class="btn" value="16" min="8" max="72"
+                        title="Font Size (px)">
+                    <span style="font-size: 0.8rem; color: #888;">px</span>
+                </div>
                 <button id="btn-table" class="btn">Table</button>
                 <button id="btn-help" class="btn">?</button>
                 <div id="status-indicator" class="status">Saved (Local)</div>
