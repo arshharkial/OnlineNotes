@@ -383,6 +383,24 @@ fontSizeInput.addEventListener('input', (e) => {
     setFontSize(e.target.value);
 });
 
+// Font Size Buttons
+const btnDecreaseFont = document.getElementById('btn-decrease-font');
+const btnIncreaseFont = document.getElementById('btn-increase-font');
+
+btnDecreaseFont.addEventListener('click', () => {
+    const current = parseInt(fontSizeInput.value);
+    if (!isNaN(current)) {
+        setFontSize(current - 2);
+    }
+});
+
+btnIncreaseFont.addEventListener('click', () => {
+    const current = parseInt(fontSizeInput.value);
+    if (!isNaN(current)) {
+        setFontSize(current + 2);
+    }
+});
+
 // Load saved font size
 const savedFontSize = localStorage.getItem(FONT_SIZE_KEY);
 if (savedFontSize) {

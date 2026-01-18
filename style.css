@@ -68,6 +68,23 @@ h1 {
     gap: 5px;
 }
 
+/* Hide spinners for number input */
+.input-no-spinner::-webkit-inner-spin-button,
+.input-no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.input-no-spinner {
+    appearance: textfield;
+    /* Standard property */
+    -moz-appearance: textfield;
+    /* Firefox */
+    text-align: center;
+    width: 60px;
+    /* Specific width */
+}
+
 .btn {
     background-color: var(--btn-bg);
     color: var(--text-color);
@@ -78,6 +95,18 @@ h1 {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
     transition: background-color 0.2s;
+}
+
+.btn-icon {
+    padding: 8px 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .btn:hover {
