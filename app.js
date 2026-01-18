@@ -11,15 +11,59 @@ const statusIndicator = document.getElementById('status-indicator');
 const btnSave = document.getElementById('btn-save');
 const btnOpen = document.getElementById('btn-open');
 
-// --- Configure Marked ---
+// --- Configure Marked (Modern Way for Syntax Highlighting) ---
+const renderer = new marked.Renderer();
+renderer.code = function ({ text, lang, escaped }) {
+    const language = lang || 'plaintext';
+    // Check if language is supported by highlight.js
+    const validLang = hljs.getLanguage(language) ? language : 'plaintext';
+    try {
+        const highlighted = hljs.highlight(text, { language: validLang }).value;
+        return `<pre><code class="hljs language-${validLang}">${highlighted}</code></pre>`;
+    } catch (e) {
+        return `<pre><code class="hljs language-plaintext">${text}</code></pre>`;
+    }
+};
+// Use the renderer
+marked.use({ renderer });
 marked.setOptions({
-    breaks: true, // Enable GFM line breaks
-    gfm: true,    // Enable GFM
-    highlight: function (code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-            return hljs.highlight(code, { language: lang }).value;
-        } else {
-            return hljs.highlightAuto(code).value;
+    breaks: true,
+    gfm: true
+});
+
+// --- Interactive Checkboxes Logic ---
+function toggleChecklist(index) {
+    const text = noteEditor.value;
+    const regex = /^(\s*-\s*\[)([ xX])(\]\s)/gm;
+    let match;
+    let currentIndex = 0;
+
+    // Replace the Nth match
+    const newText = text.replace(regex, (fullMatch, prefix, checked, suffix) => {
+        if (currentIndex === index) {
+            const newStatus = (checked === ' ' ? 'x' : ' ');
+            currentIndex++;
+            return `${prefix}${newStatus}${suffix}`;
+        }
+        currentIndex++;
+        return fullMatch;
+    });
+
+    if (newText !== text) {
+        noteEditor.value = newText;
+        renderMarkdown(newText);
+        debouncedSaveLocal();
+        updateStatus('Saved (Local)');
+    }
+}
+
+// Event Delegation for Checkboxes
+previewPane.addEventListener('change', (e) => {
+    if (e.target.type === 'checkbox') {
+        const checkboxes = Array.from(previewPane.querySelectorAll('input[type="checkbox"]'));
+        const index = checkboxes.indexOf(e.target);
+        if (index !== -1) {
+            toggleChecklist(index);
         }
     }
 });
