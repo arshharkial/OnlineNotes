@@ -8,7 +8,11 @@ A simple, distraction-free, browser-based note-taking application with Markdown 
 -   **Markdown Support**: Write in Markdown and see a real-time preview (Split View).
 -   **File Persistence**: Save your notes to `.md` files on your disk and open them later. This allows you to keep your data even if you switch browsers or clear your cache.
 -   **Pitch Black Theme**: High-contrast dark mode for coding/writing in low light.
+-   **Dynamic Font Size**: Adjust font size with simple +/- controls. Text and UI elements scale automatically.
+-   **Developer Friendly**: Line numbers, Syntax Highlighting, and Checklists support.
 -   **Auto-Save**: Automatically saves to browser LocalStorage as a backup.
+
+[View Full Revision History](REVISIONS.md)
 
 ## How to Run
 
