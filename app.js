@@ -2,14 +2,28 @@
 
 const STORAGE_KEY = 'online-notes-data';
 const DEBOUNCE_DELAY = 1000; // 1 second
+const SYNC_CHANNEL = 'online-notes-sync';
+
+// State
+let currentFileHandle = null;
+let lastModifiedTime = 0;
+let isDirty = false;
+let isSaving = false;
+
+// Broadcast Channel
+const syncChannel = new BroadcastChannel(SYNC_CHANNEL);
 
 // DOM Elements
 const noteEditor = document.getElementById('note-editor');
 const lineNumbers = document.getElementById('line-numbers');
 const previewPane = document.getElementById('markdown-preview');
 const statusIndicator = document.getElementById('status-indicator');
-const btnSave = document.getElementById('btn-save');
+const btnSave = document.getElementById('btn-save'); // Now "Save As" essentially
 const btnOpen = document.getElementById('btn-open');
+const conflictWarning = document.getElementById('conflict-warning');
+const btnReloadConflict = document.getElementById('btn-reload-conflict');
+const btnDismissConflict = document.getElementById('btn-dismiss-conflict');
+
 
 // --- Configure Marked (Modern Way for Syntax Highlighting) ---
 const renderer = new marked.Renderer();
@@ -46,20 +60,17 @@ const inputCols = document.getElementById('table-cols');
 
 function createTableMarkdown(rows, cols) {
     let table = '';
-
     // Header Row
     table += '|';
     for (let c = 1; c <= cols; c++) {
         table += '   |';
     }
     table += '\n|';
-
     // Separator Row
     for (let c = 1; c <= cols; c++) {
         table += ' --- |';
     }
     table += '\n';
-
     // Body Rows
     for (let r = 1; r <= rows; r++) {
         table += '|';
@@ -68,7 +79,6 @@ function createTableMarkdown(rows, cols) {
         }
         table += '\n';
     }
-
     return table + '\n';
 }
 
@@ -85,9 +95,7 @@ function insertTextAtCursor(text) {
     noteEditor.selectionStart = noteEditor.selectionEnd = start + text.length;
 
     // Trigger updates
-    renderMarkdown(noteEditor.value);
-    updateLineNumbers();
-    debouncedSaveLocal();
+    triggerUpdate();
 }
 
 // Open Modal
@@ -157,9 +165,7 @@ function toggleChecklist(index) {
 
     if (newText !== text) {
         noteEditor.value = newText;
-        renderMarkdown(newText);
-        debouncedSaveLocal();
-        updateStatus('Saved (Local)');
+        triggerUpdate();
     }
 }
 
@@ -183,6 +189,8 @@ function updateStatus(status) {
         statusIndicator.classList.add('saved');
     } else if (status === 'Saving...') {
         statusIndicator.classList.add('saving');
+    } else if (status === 'Unsaved Changes') {
+        statusIndicator.style.color = '#ffcc00';
     }
 }
 
@@ -210,25 +218,72 @@ function renderMarkdown(text) {
     }
 }
 
-// --- Persistence (Local Storage) ---
+// --- Core Logic: Load, Save, Sync ---
+
+// 1. Trigger Update (Called on Input)
+function triggerUpdate() {
+    isDirty = true;
+    updateStatus('Unsaved Changes');
+    renderMarkdown(noteEditor.value);
+    updateLineNumbers();
+    debouncedSave(); // Auto-save trigger
+}
+
+// 2. Load Initial
 function loadNote() {
+    // For now, load from localStorage if available (Scratchpad mode)
+    // In V9, we prioritize Files, but if no file is open, we fallback to cache.
     const savedNote = localStorage.getItem(STORAGE_KEY);
     if (savedNote) {
         noteEditor.value = savedNote;
         renderMarkdown(savedNote);
         updateLineNumbers();
+        updateStatus('Loaded (Scratchpad)');
     } else {
-        updateLineNumbers(); // Init for empty state
+        updateLineNumbers();
+        updateStatus('New Note');
     }
 }
 
-function saveLocal() {
+// 3. Save (Dual Strategy)
+async function performSave() {
+    if (isSaving) return;
+    isSaving = true;
+    updateStatus('Saving...');
+
     const content = noteEditor.value;
-    localStorage.setItem(STORAGE_KEY, content);
-    updateStatus('Saved (Local)');
+
+    try {
+        if (currentFileHandle) {
+            // Save to Disk (File System)
+            const writable = await currentFileHandle.createWritable();
+            await writable.write(content);
+            await writable.close();
+
+            // Update metadata
+            const file = await currentFileHandle.getFile();
+            lastModifiedTime = file.lastModified;
+            updateStatus(`Saved to ${file.name}`);
+
+            // Notify other tabs
+            syncChannel.postMessage({ type: 'update', content: content, source: 'external' });
+        } else {
+            // Save to Scratchpad (LocalStorage)
+            localStorage.setItem(STORAGE_KEY, content);
+            updateStatus('Saved (Local)');
+            // Notify other tabs
+            syncChannel.postMessage({ type: 'update', content: content, source: 'scratchpad' });
+        }
+        isDirty = false;
+    } catch (err) {
+        console.error('Save failed:', err);
+        updateStatus('Save Failed!');
+    } finally {
+        isSaving = false;
+    }
 }
 
-// Debounce for local save
+// Debounce wrapper
 function debounce(func, wait) {
     let timeout;
     return function (...args) {
@@ -236,42 +291,10 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
-const debouncedSaveLocal = debounce(saveLocal, DEBOUNCE_DELAY);
+const debouncedSave = debounce(performSave, DEBOUNCE_DELAY);
 
-// --- File System Access API ---
-// (Kept same as V2)
 
-// 1. Save to Disk
-async function saveToDisk() {
-    const content = noteEditor.value;
-    try {
-        if (window.showSaveFilePicker) {
-            const handle = await window.showSaveFilePicker({
-                types: [{
-                    description: 'Markdown File',
-                    accept: { 'text/markdown': ['.md', '.txt'] },
-                }],
-            });
-            const writable = await handle.createWritable();
-            await writable.write(content);
-            await writable.close();
-            updateStatus('Saved to Disk');
-        } else {
-            const blob = new Blob([content], { type: 'text/markdown' });
-            const notUrl = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = notUrl;
-            a.download = 'note.md';
-            a.click();
-            URL.revokeObjectURL(notUrl);
-            updateStatus('Downloaded');
-        }
-    } catch (err) {
-        console.error('Save failed:', err);
-    }
-}
-
-// 2. Open File
+// 4. File Open (Manual)
 async function openFile() {
     try {
         if (window.showOpenFilePicker) {
@@ -281,15 +304,15 @@ async function openFile() {
                     accept: { 'text/markdown': ['.md', '.txt'] },
                 }],
             });
-            const file = await handle.getFile();
-            const contents = await file.text();
 
-            noteEditor.value = contents;
-            renderMarkdown(contents);
-            updateLineNumbers();
-            saveLocal();
-            updateStatus('Opened File');
+            currentFileHandle = handle;
+            await loadFromFileHandle(handle);
+
+            // Clear scratchpad so we don't get confused? 
+            // Optional: User might want to keep scratchpad separate.
+
         } else {
+            // Fallback for non-FSA (Manual Read)
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.md,.txt';
@@ -301,8 +324,8 @@ async function openFile() {
                     noteEditor.value = event.target.result;
                     renderMarkdown(event.target.result);
                     updateLineNumbers();
-                    saveLocal();
-                    updateStatus('Opened File');
+                    isDirty = true; // Treated as unsaved in scratchpad logic
+                    debouncedSave();
                 };
                 reader.readAsText(file);
             };
@@ -313,35 +336,117 @@ async function openFile() {
     }
 }
 
-// --- Event Listeners ---
-noteEditor.addEventListener('input', () => {
-    updateStatus('Saving...');
-    renderMarkdown(noteEditor.value);
+// Helper to load from handle
+async function loadFromFileHandle(handle) {
+    const file = await handle.getFile();
+    const contents = await file.text();
+
+    lastModifiedTime = file.lastModified;
+    noteEditor.value = contents;
+    renderMarkdown(contents);
     updateLineNumbers();
-    debouncedSaveLocal();
+    isDirty = false;
+    updateStatus(`Opened ${file.name}`);
+}
+
+
+// --- Sync Logic ---
+
+// 1. Polling for External Changes
+setInterval(async () => {
+    if (!currentFileHandle || isSaving) return; // Don't poll if saving or no file
+
+    try {
+        const file = await currentFileHandle.getFile();
+        if (file.lastModified > lastModifiedTime) {
+            // External Change Detected!
+            if (isDirty) {
+                // Conflict: User has unsaved work, file changed on disk
+                showConflictWarning();
+            } else {
+                // Safe: User hasn't touched the file, safe to reload
+                console.log('Auto-reloading external changes...');
+                await loadFromFileHandle(currentFileHandle);
+            }
+        }
+    } catch (err) {
+        console.warn('Poll failed:', err);
+    }
+}, 2000); // Check every 2s
+
+// 2. BroadcastChannel Listener (Tab Sync)
+syncChannel.onmessage = (event) => {
+    const { type, content } = event.data;
+    if (type === 'update') {
+        if (isDirty) {
+            // Another tab updated, but we have unsaved work here?
+            // Actually, if it's the SAME browser, we might want to just sync?
+            // But let's be safe: warn.
+            showConflictWarning();
+        } else {
+            // Clean state, just accept the update
+            noteEditor.value = content;
+            renderMarkdown(content);
+            updateLineNumbers();
+
+            // If it was a file save, we should ideally update our timestamp too?
+            // Since we can't easily get the file handle from another tab, 
+            // we rely on the logic that we are now "Clean" and up to date.
+            // But for polling to work, if tab A saved to disk, tab B needs to know the new timestamp
+            // otherwise polling will think it's an external change.
+            // For now, simpliest is to accept content.
+        }
+    }
+};
+
+// 3. Conflict UI
+function showConflictWarning() {
+    conflictWarning.classList.remove('hidden');
+}
+
+btnReloadConflict.addEventListener('click', async () => {
+    if (currentFileHandle) {
+        await loadFromFileHandle(currentFileHandle);
+        conflictWarning.classList.add('hidden');
+    } else {
+        // Scratchpad reload from localstorage?
+        loadNote();
+        conflictWarning.classList.add('hidden');
+    }
 });
 
-// Handle tab key in textarea (Optional but nice for code lines)
+btnDismissConflict.addEventListener('click', () => {
+    // User chooses to keep their version.
+    // We update lastModifiedTime to NOW so we stop warning about the OLD change.
+    // Effectively "Overwriting" the knowledge of the external change.
+    conflictWarning.classList.add('hidden');
+    // We don't save immediately, wait for next user input or manual save.
+    // But we should update our timestamp reference to avoid loop.
+    if (currentFileHandle) {
+        currentFileHandle.getFile().then(f => {
+            lastModifiedTime = f.lastModified;
+        });
+    }
+});
+
+
+// --- Event Listeners ---
+noteEditor.addEventListener('input', triggerUpdate);
+
+// Handle tab key in textarea
 noteEditor.addEventListener('keydown', function (e) {
     if (e.key == 'Tab') {
         e.preventDefault();
         const start = this.selectionStart;
         const end = this.selectionEnd;
-
-        // set textarea value to: text before caret + tab + text after caret
         this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
-
-        // put caret at right place
         this.selectionStart = this.selectionEnd = start + 1;
-
-        // Trigger update
-        renderMarkdown(this.value);
-        debouncedSaveLocal();
+        triggerUpdate();
     }
 });
 
-
-btnSave.addEventListener('click', saveToDisk);
+// Save Button (Force Save / Save As if needed, but handles auto-save logic generally)
+btnSave.addEventListener('click', performSave);
 btnOpen.addEventListener('click', openFile);
 
 // --- Help Modal Logic ---
@@ -368,13 +473,11 @@ const fontSizeInput = document.getElementById('font-size-input');
 const FONT_SIZE_KEY = 'online-notes-font-size';
 
 function setFontSize(size) {
-    // Ensure we are working with just the number
     const sizeVal = parseInt(size);
     if (!isNaN(sizeVal) && sizeVal >= 8 && sizeVal <= 72) {
         document.documentElement.style.setProperty('--base-font-size', sizeVal + 'px');
         fontSizeInput.value = sizeVal;
         localStorage.setItem(FONT_SIZE_KEY, sizeVal);
-
         setTimeout(updateLineNumbers, 0);
     }
 }
@@ -383,7 +486,6 @@ fontSizeInput.addEventListener('input', (e) => {
     setFontSize(e.target.value);
 });
 
-// Font Size Buttons
 const btnDecreaseFont = document.getElementById('btn-decrease-font');
 const btnIncreaseFont = document.getElementById('btn-increase-font');
 
@@ -401,12 +503,10 @@ btnIncreaseFont.addEventListener('click', () => {
     }
 });
 
-// Load saved font size
 const savedFontSize = localStorage.getItem(FONT_SIZE_KEY);
 if (savedFontSize) {
     setFontSize(savedFontSize);
 } else {
-    // Default
     setFontSize(16);
 }
 
