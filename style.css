@@ -13,6 +13,8 @@
     --btn-hover: #444444;
     --gutter-bg: #111111;
     --gutter-text: #555555;
+    --base-font-size: 16px;
+    /* Dynamic Font Size */
 }
 
 * {
@@ -28,7 +30,7 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    font-size: 16pt;
+    font-size: var(--base-font-size);
 }
 
 .app-container {
@@ -116,7 +118,7 @@ main.split-view {
     background-color: var(--gutter-bg);
     color: var(--gutter-text);
     font-family: 'Inter', monospace;
-    font-size: 16pt;
+    font-size: var(--base-font-size);
     line-height: 1.6;
     text-align: right;
     padding: 20px 10px;
@@ -134,7 +136,7 @@ main.split-view {
     background-color: transparent;
     color: var(--text-color);
     font-family: 'Inter', monospace;
-    font-size: 16pt;
+    font-size: var(--base-font-size);
     line-height: 1.6;
     resize: none;
     outline: none;
@@ -169,7 +171,7 @@ main.split-view {
     background-color: var(--preview-bg);
     color: var(--text-color);
     font-family: 'Inter', sans-serif;
-    font-size: 16pt;
+    font-size: var(--base-font-size);
     line-height: 1.6;
     overflow-y: auto;
 }
@@ -407,6 +409,7 @@ footer {
     background-color: var(--primary-color);
     /* Maintain color */
 }
+
 /* Validation Error Style */
 .input-error {
     border-color: #ff4444 !important;
@@ -414,9 +417,23 @@ footer {
 }
 
 @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+
+    75% {
+        transform: translateX(-5px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
