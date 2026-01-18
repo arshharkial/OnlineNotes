@@ -20,6 +20,7 @@
             <div class="controls">
                 <button id="btn-open" class="btn">Open File</button>
                 <button id="btn-save" class="btn">Save to Disk</button>
+                <button id="btn-help" class="btn">?</button>
                 <div id="status-indicator" class="status">Saved (Local)</div>
             </div>
         </header>
@@ -31,6 +32,27 @@
             <p>Data stored locally. Save to disk to share across browsers.</p>
         </footer>
     </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-help" class="close">&times;</span>
+            <h2>Markdown Syntax Guide</h2>
+            <div class="cheatsheet">
+                <div class="item"><code># H1</code> <span>Header 1</span></div>
+                <div class="item"><code>## H2</code> <span>Header 2</span></div>
+                <div class="item"><code>**bold**</code> <span>Bold Text</span></div>
+                <div class="item"><code>*italic*</code> <span>Italic Text</span></div>
+                <div class="item"><code>- item</code> <span>List Item</span></div>
+                <div class="item"><code>1. item</code> <span>Numbered List</span></div>
+                <div class="item"><code>[link](url)</code> <span>Link</span></div>
+                <div class="item"><code>`code`</code> <span>Inline Code</span></div>
+                <div class="item"><code>```block```</code> <span>Code Block</span></div>
+                <div class="item"><code>> quote</code> <span>Blockquote</span></div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="app.js"></script>
 </body>

@@ -145,5 +145,24 @@ noteEditor.addEventListener('input', () => {
 btnSave.addEventListener('click', saveToDisk);
 btnOpen.addEventListener('click', openFile);
 
+// --- Help Modal Logic ---
+const modal = document.getElementById('help-modal');
+const btnHelp = document.getElementById('btn-help');
+const spanClose = document.getElementById('close-help');
+
+btnHelp.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+});
+
+spanClose.addEventListener('click', () => {
+    modal.classList.add('hidden');
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.classList.add('hidden');
+    }
+});
+
 // --- Initialization ---
 loadNote();

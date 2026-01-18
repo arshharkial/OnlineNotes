@@ -187,3 +187,74 @@ footer {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+/* Modal Styles */
+.modal {
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background-color: #111;
+    border: 1px solid #333;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #fff;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.cheatsheet .item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #222;
+}
+
+.cheatsheet code {
+    background-color: #222;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ff79c6;
+    font-family: monospace;
+}
+
+.cheatsheet span {
+    color: #888;
+}
