@@ -108,10 +108,21 @@ btnInsertTable.addEventListener('click', () => {
     const r = parseInt(inputRows.value);
     const c = parseInt(inputCols.value);
 
-    if (isNaN(r) || isNaN(c) || r < 1 || c < 1) {
-        alert("Invalid input. Please enter numbers greater than 0.");
-        return;
+    // Reset errors
+    inputRows.classList.remove('input-error');
+    inputCols.classList.remove('input-error');
+
+    let valid = true;
+    if (isNaN(r) || r < 1) {
+        inputRows.classList.add('input-error');
+        valid = false;
     }
+    if (isNaN(c) || c < 1) {
+        inputCols.classList.add('input-error');
+        valid = false;
+    }
+
+    if (!valid) return;
 
     const tableMd = createTableMarkdown(r, c);
     insertTextAtCursor(tableMd);
