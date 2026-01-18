@@ -1,25 +1,16 @@
 :root {
-    --bg-color: #f9fafb;
-    --text-color: #1f2937;
-    --editor-bg: #ffffff;
-    --border-color: #e5e7eb;
-    --primary-color: #3b82f6;
-    --muted-text: #6b7280;
-    --status-saved: #10b981;
-    --status-saving: #f59e0b;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-color: #111827;
-        --text-color: #f3f4f6;
-        --editor-bg: #1f2937;
-        --border-color: #374151;
-        --primary-color: #60a5fa;
-        --muted-text: #9ca3af;
-    }
+    /* Pitch Black Theme Defaults */
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --editor-bg: #000000;
+    --preview-bg: #000000;
+    --border-color: #333333;
+    --primary-color: #ffffff;
+    --muted-text: #888888;
+    --status-saved: #00ff00;
+    --status-saving: #ffff00;
+    --btn-bg: #222222;
+    --btn-hover: #444444;
 }
 
 * {
@@ -30,21 +21,19 @@
 
 body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: --bg-color; /* Fallback */
     background-color: var(--bg-color);
     color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    font-size: 16pt;
+    /* Requested minimum size */
 }
 
 .app-container {
     display: flex;
     flex-direction: column;
     height: 100%;
-    max-width: 900px;
-    margin: 0 auto;
     width: 100%;
     padding: 20px;
 }
@@ -64,11 +53,34 @@ h1 {
     letter-spacing: -0.025em;
 }
 
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn {
+    background-color: var(--btn-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: var(--btn-hover);
+}
+
 .status {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     font-weight: 500;
     color: var(--muted-text);
-    transition: color 0.3s;
+    min-width: 100px;
+    text-align: right;
 }
 
 .status.saved {
@@ -79,32 +91,76 @@ h1 {
     color: var(--status-saving);
 }
 
-main {
+main.split-view {
     flex: 1;
     display: flex;
-    flex-direction: column;
+    gap: 20px;
+    overflow: hidden;
+    /* Important for scrollbars relative to panes */
 }
 
-#note-editor {
+#note-editor,
+.preview-pane {
     flex: 1;
-    width: 100%;
-    padding: 24px;
+    width: 50%;
+    padding: 20px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 4px;
     background-color: var(--editor-bg);
     color: var(--text-color);
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 1rem;
+    font-family: 'Inter', monospace;
+    /* Monospace for editor is often better for markdown, but user asked for Inter-like feel, can keep sans-serif or swap */
+    font-size: 16pt;
     line-height: 1.6;
     resize: none;
-    box-shadow: var(--shadow-sm);
     outline: none;
-    transition: box-shadow 0.2s, border-color 0.2s;
+    overflow-y: auto;
 }
 
-#note-editor:focus {
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary-color);
+.preview-pane {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--preview-bg);
+}
+
+/* Markdown Styles within Preview */
+.preview-pane h1,
+.preview-pane h2,
+.preview-pane h3 {
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.2em;
+}
+
+.preview-pane p {
+    margin-bottom: 1em;
+}
+
+.preview-pane code {
+    background-color: #222;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.preview-pane pre {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin-bottom: 1em;
+}
+
+.preview-pane ul,
+.preview-pane ol {
+    margin-bottom: 1em;
+    padding-left: 20px;
+}
+
+.preview-pane blockquote {
+    border-left: 4px solid var(--border-color);
+    padding-left: 10px;
+    color: var(--muted-text);
+    margin-bottom: 1em;
 }
 
 footer {
@@ -112,4 +168,22 @@ footer {
     text-align: center;
     font-size: 0.75rem;
     color: var(--muted-text);
+}
+
+/* Scrollbar styling for dark mode */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

@@ -1,28 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Note</title>
-    <meta name="description" content="A simple, browser-based note taking application that saves your work automatically.">
+    <meta name="description"
+        content="A simple, browser-based note taking application that saves your work automatically.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="app-container">
         <header>
             <h1>Online Note</h1>
-            <div id="status-indicator" class="status">Saved</div>
+            <div class="controls">
+                <button id="btn-open" class="btn">Open File</button>
+                <button id="btn-save" class="btn">Save to Disk</button>
+                <div id="status-indicator" class="status">Saved (Local)</div>
+            </div>
         </header>
-        <main>
-            <textarea id="note-editor" placeholder="Start typing your note here... It will autosave locally."></textarea>
+        <main class="split-view">
+            <textarea id="note-editor" placeholder="# Start typing your markdown note here..."></textarea>
+            <div id="markdown-preview" class="preview-pane"></div>
         </main>
         <footer>
-            <p>Data is stored locally in your browser.</p>
+            <p>Data stored locally. Save to disk to share across browsers.</p>
         </footer>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
