@@ -1,6 +1,9 @@
 # Walkthrough - Online Note Application (V8.0)
 
-The application now features explicit controls for font size adjustments and a comprehensive revision history.
+The application now features explicit controls for font size adjustments and a comprehensive Revision History
+
+## V8.1
+-   **Refinement**: Changed font size button step from 2px to 1px for finer control.
 
 ## V8.0 Refinements
 -   **Font Size Buttons**: Added `[-]` and `[+]` buttons next to the font size input. This allows for quick, precise 2px adjustments without typing.

@@ -390,14 +390,14 @@ const btnIncreaseFont = document.getElementById('btn-increase-font');
 btnDecreaseFont.addEventListener('click', () => {
     const current = parseInt(fontSizeInput.value);
     if (!isNaN(current)) {
-        setFontSize(current - 2);
+        setFontSize(current - 1);
     }
 });
 
 btnIncreaseFont.addEventListener('click', () => {
     const current = parseInt(fontSizeInput.value);
     if (!isNaN(current)) {
-        setFontSize(current + 2);
+        setFontSize(current + 1);
     }
 });
 
