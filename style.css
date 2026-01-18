@@ -11,6 +11,8 @@
     --status-saving: #ffff00;
     --btn-bg: #222222;
     --btn-hover: #444444;
+    --gutter-bg: #111111;
+    --gutter-text: #555555;
 }
 
 * {
@@ -27,7 +29,6 @@ body {
     display: flex;
     flex-direction: column;
     font-size: 16pt;
-    /* Requested minimum size */
 }
 
 .app-container {
@@ -96,30 +97,81 @@ main.split-view {
     display: flex;
     gap: 20px;
     overflow: hidden;
-    /* Important for scrollbars relative to panes */
 }
 
-#note-editor,
-.preview-pane {
+/* Editor Container for Gutter */
+.editor-container {
     flex: 1;
-    width: 50%;
-    padding: 20px;
+    display: flex;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background-color: var(--editor-bg);
+    overflow: hidden;
+    /* Contains the scroll */
+}
+
+.line-numbers {
+    width: 50px;
+    /* Fixed width */
+    background-color: var(--gutter-bg);
+    color: var(--gutter-text);
+    font-family: 'Inter', monospace;
+    font-size: 16pt;
+    line-height: 1.6;
+    text-align: right;
+    padding: 20px 10px;
+    user-select: none;
+    overflow: hidden;
+    /* No scrollbars on gutter */
+    border-right: 1px solid var(--border-color);
+}
+
+#note-editor {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    /* Container has border */
+    background-color: transparent;
     color: var(--text-color);
     font-family: 'Inter', monospace;
-    /* Monospace for editor is often better for markdown, but user asked for Inter-like feel, can keep sans-serif or swap */
     font-size: 16pt;
     line-height: 1.6;
     resize: none;
     outline: none;
     overflow-y: auto;
+    white-space: pre;
+    /* Important for preserving newlines */
+}
+
+/* Scrollbar styling for dark mode */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 .preview-pane {
-    font-family: 'Inter', sans-serif;
+    flex: 1;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
     background-color: var(--preview-bg);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 16pt;
+    line-height: 1.6;
+    overflow-y: auto;
 }
 
 /* Markdown Styles within Preview */
@@ -143,11 +195,17 @@ main.split-view {
 }
 
 .preview-pane pre {
-    background-color: #222;
+    background-color: #161b22;
+    /* Github Dark Bg */
     padding: 10px;
     border-radius: 5px;
     overflow-x: auto;
     margin-bottom: 1em;
+}
+
+.preview-pane pre code {
+    background-color: transparent;
+    padding: 0;
 }
 
 .preview-pane ul,
@@ -163,6 +221,25 @@ main.split-view {
     margin-bottom: 1em;
 }
 
+/* Checklist Styles */
+.preview-pane ul.contains-task-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.preview-pane li.task-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.preview-pane input[type="checkbox"] {
+    accent-color: var(--primary-color);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
 footer {
     margin-top: 20px;
     text-align: center;
@@ -170,23 +247,6 @@ footer {
     color: var(--muted-text);
 }
 
-/* Scrollbar styling for dark mode */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
 /* Modal Styles */
 .modal {
     position: fixed;
@@ -216,7 +276,7 @@ footer {
     width: 400px;
     max-width: 90%;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .close {

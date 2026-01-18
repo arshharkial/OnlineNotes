@@ -25,7 +25,11 @@
             </div>
         </header>
         <main class="split-view">
-            <textarea id="note-editor" placeholder="# Start typing your markdown note here..."></textarea>
+            <div class="editor-container">
+                <div id="line-numbers" class="line-numbers"></div>
+                <textarea id="note-editor" placeholder="# Start typing your markdown note here..."
+                    spellcheck="false"></textarea>
+            </div>
             <div id="markdown-preview" class="preview-pane"></div>
         </main>
         <footer>
@@ -43,16 +47,18 @@
                 <div class="item"><code>## H2</code> <span>Header 2</span></div>
                 <div class="item"><code>**bold**</code> <span>Bold Text</span></div>
                 <div class="item"><code>*italic*</code> <span>Italic Text</span></div>
+                <div class="item"><code>- [ ]</code> <span>Checklist</span></div>
                 <div class="item"><code>- item</code> <span>List Item</span></div>
-                <div class="item"><code>1. item</code> <span>Numbered List</span></div>
                 <div class="item"><code>[link](url)</code> <span>Link</span></div>
                 <div class="item"><code>`code`</code> <span>Inline Code</span></div>
-                <div class="item"><code>```block```</code> <span>Code Block</span></div>
+                <div class="item"><code>```js```</code> <span>Code Block</span></div>
                 <div class="item"><code>> quote</code> <span>Blockquote</span></div>
             </div>
         </div>
     </div>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="app.js"></script>
 </body>

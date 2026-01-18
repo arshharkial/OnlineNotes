@@ -5,10 +5,24 @@ const DEBOUNCE_DELAY = 1000; // 1 second
 
 // DOM Elements
 const noteEditor = document.getElementById('note-editor');
+const lineNumbers = document.getElementById('line-numbers');
 const previewPane = document.getElementById('markdown-preview');
 const statusIndicator = document.getElementById('status-indicator');
 const btnSave = document.getElementById('btn-save');
 const btnOpen = document.getElementById('btn-open');
+
+// --- Configure Marked ---
+marked.setOptions({
+    breaks: true, // Enable GFM line breaks
+    gfm: true,    // Enable GFM
+    highlight: function (code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            return hljs.highlight(code, { language: lang }).value;
+        } else {
+            return hljs.highlightAuto(code).value;
+        }
+    }
+});
 
 // --- Status Helper ---
 function updateStatus(status) {
@@ -22,15 +36,27 @@ function updateStatus(status) {
     }
 }
 
+// --- Line Numbers Logic ---
+function updateLineNumbers() {
+    const lines = noteEditor.value.split('\n').length;
+    // Ensure at least one line number is shown even if empty
+    const count = lines > 0 ? lines : 1;
+
+    lineNumbers.innerHTML = Array(count).fill(0).map((_, i) => `<div>${i + 1}</div>`).join('');
+}
+
+// Sync Scroll
+noteEditor.addEventListener('scroll', () => {
+    lineNumbers.scrollTop = noteEditor.scrollTop;
+});
+
 // --- Markdown Rendering ---
 function renderMarkdown(text) {
     try {
-        // marked is loaded via CDN in index.html
         previewPane.innerHTML = marked.parse(text);
     } catch (e) {
-        // Fallback or ignore error, showing raw text is better than nothing
         console.error("Markdown parsing error:", e);
-        previewPane.innerText = text;
+        previewPane.innerText = text; // Fallback
     }
 }
 
@@ -40,6 +66,9 @@ function loadNote() {
     if (savedNote) {
         noteEditor.value = savedNote;
         renderMarkdown(savedNote);
+        updateLineNumbers();
+    } else {
+        updateLineNumbers(); // Init for empty state
     }
 }
 
@@ -60,12 +89,12 @@ function debounce(func, wait) {
 const debouncedSaveLocal = debounce(saveLocal, DEBOUNCE_DELAY);
 
 // --- File System Access API ---
+// (Kept same as V2)
 
 // 1. Save to Disk
 async function saveToDisk() {
     const content = noteEditor.value;
     try {
-        // Use File System Access API if available
         if (window.showSaveFilePicker) {
             const handle = await window.showSaveFilePicker({
                 types: [{
@@ -78,7 +107,6 @@ async function saveToDisk() {
             await writable.close();
             updateStatus('Saved to Disk');
         } else {
-            // Fallback: Blob Download
             const blob = new Blob([content], { type: 'text/markdown' });
             const notUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -90,7 +118,6 @@ async function saveToDisk() {
         }
     } catch (err) {
         console.error('Save failed:', err);
-        // User might have cancelled
     }
 }
 
@@ -109,10 +136,10 @@ async function openFile() {
 
             noteEditor.value = contents;
             renderMarkdown(contents);
-            saveLocal(); // Sync to local storage
+            updateLineNumbers();
+            saveLocal();
             updateStatus('Opened File');
         } else {
-            // Fallback: Standard Input
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.md,.txt';
@@ -123,6 +150,7 @@ async function openFile() {
                 reader.onload = event => {
                     noteEditor.value = event.target.result;
                     renderMarkdown(event.target.result);
+                    updateLineNumbers();
                     saveLocal();
                     updateStatus('Opened File');
                 };
@@ -139,8 +167,29 @@ async function openFile() {
 noteEditor.addEventListener('input', () => {
     updateStatus('Saving...');
     renderMarkdown(noteEditor.value);
+    updateLineNumbers();
     debouncedSaveLocal();
 });
+
+// Handle tab key in textarea (Optional but nice for code lines)
+noteEditor.addEventListener('keydown', function (e) {
+    if (e.key == 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+
+        // set textarea value to: text before caret + tab + text after caret
+        this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+
+        // put caret at right place
+        this.selectionStart = this.selectionEnd = start + 1;
+
+        // Trigger update
+        renderMarkdown(this.value);
+        debouncedSaveLocal();
+    }
+});
+
 
 btnSave.addEventListener('click', saveToDisk);
 btnOpen.addEventListener('click', openFile);
