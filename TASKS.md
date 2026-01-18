@@ -1,0 +1,50 @@
+# Task List for Online Note Taking App
+
+- [x] Project Setup <!-- id: 0 -->
+    - [x] Initialize Git repository <!-- id: 1 -->
+    - [x] Create basic file structure (index.html, style.css, app.js) <!-- id: 2 -->
+- [x] UI Implementation <!-- id: 3 -->
+    - [x] Design the layout (HTML structure) <!-- id: 4 -->
+    - [x] Apply styles (CSS - Visually appealing, Dark/Light mode maybe?) <!-- id: 5 -->
+- [x] Logic Implementation <!-- id: 6 -->
+    - [x] Implement text editing capability <!-- id: 7 -->
+    - [x] Implement auto-save to localStorage <!-- id: 8 -->
+    - [x] Implement load from localStorage on startup <!-- id: 9 -->
+- [x] Documentation <!-- id: 10 -->
+    - [x] Create README.md <!-- id: 11 -->
+    - [x] Create detailed implementation documentation <!-- id: 12 -->
+- [x] Final Review & Commit <!-- id: 13 -->
+- [x] V2 Improvements <!-- id: 14 -->
+    - [x] Update Theme (Pitch Black, 16pt+) <!-- id: 15 -->
+    - [x] Implement Real-time Markdown Rendering (Split View) <!-- id: 16 -->
+    - [x] Implement File System Persistence (Save/Load to Disk) <!-- id: 17 -->
+- [x] Markdown Syntax Help <!-- id: 18 -->
+    - [x] Add Help Button and Modal <!-- id: 19 -->
+- [x] V3 Features <!-- id: 20 -->
+    - [x] Implement Line Numbers Gutter <!-- id: 21 -->
+    - [x] Enable GFM Checklists <!-- id: 22 -->
+    - [x] integrated Highlight.js for Syntax Highlighting <!-- id: 23 -->
+- [x] Bug Fixes <!-- id: 24 -->
+    - [x] Fix Syntax Highlighting (Update for modern marked.js) <!-- id: 25 -->
+    - [x] Make Checklists Interactive <!-- id: 26 -->
+- [x] V4 Features <!-- id: 27 -->
+    - [x] Fix Checkbox Rendering (Remove 'disabled') <!-- id: 28 -->
+    - [x] Implement Table Support (Insert Table) <!-- id: 29 -->
+- [x] V5 UI Refinements <!-- id: 30 -->
+    - [x] Improve Checkbox Contrast (Visual Distinction) <!-- id: 31 -->
+    - [x] Fix Table Borders in Preview <!-- id: 32 -->
+    - [x] Custom "Insert Table" Modal (Abandon prompt()) <!-- id: 33 -->
+- [x] V6 Features <!-- id: 34 -->
+    - [x] Add Font Size UI Control <!-- id: 35 -->
+    - [x] Refactor CSS to use Dynamic Font Size variable <!-- id: 36 -->
+    - [x] Implement Font Size Persistence <!-- id: 37 -->
+- [x] V7 Refinements <!-- id: 38 -->
+    - [x] Change Font Size Control to Input Field <!-- id: 39 -->
+    - [x] Make Checkboxes Scale with Font Size (em units) <!-- id: 40 -->
+- [x] V8 Refinements <!-- id: 41 -->
+    - [x] Add Explicit Font Size Buttons [-] [+] <!-- id: 42 -->
+    - [x] Create REVISIONS.md (Migrate Walkthrough) <!-- id: 43 -->
+    - [x] Create REVISIONS.md (Migrate Walkthrough) <!-- id: 43 -->
+    - [x] Update README.md with latest features <!-- id: 44 -->
+- [x] V8.1 Refinements <!-- id: 45 -->
+    - [x] Change Font Size Increase/Decrease Step to 1px <!-- id: 46 -->
