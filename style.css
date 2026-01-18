@@ -221,7 +221,7 @@ main.split-view {
     margin-bottom: 1em;
 }
 
-/* Checklist Styles */
+/* Checklist Styles - Enhanced Visibility */
 .preview-pane ul.contains-task-list {
     list-style-type: none;
     padding-left: 0;
@@ -230,14 +230,66 @@ main.split-view {
 .preview-pane li.task-list-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    /* More space */
+    margin-bottom: 6px;
 }
 
 .preview-pane input[type="checkbox"] {
-    accent-color: var(--primary-color);
-    width: 16px;
-    height: 16px;
+    appearance: none;
+    /* Remove default styling */
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--muted-text);
+    border-radius: 4px;
+    background-color: transparent;
     cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.preview-pane input[type="checkbox"]:checked {
+    background-color: var(--status-saved);
+    /* Bright Green */
+    border-color: var(--status-saved);
+}
+
+.preview-pane input[type="checkbox"]:checked::after {
+    content: '✔';
+    font-size: 14px;
+    color: #000;
+    /* Black tick on green bg */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+}
+
+/* Table Styles - Borders & Padding */
+.preview-pane table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1em;
+    border: 1px solid var(--border-color);
+}
+
+.preview-pane th,
+.preview-pane td {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.preview-pane th {
+    background-color: #222;
+    font-weight: 600;
+}
+
+.preview-pane tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Slight zebra striping */
 }
 
 footer {
@@ -317,4 +369,41 @@ footer {
 
 .cheatsheet span {
     color: #888;
+}
+
+/* Modal Inputs */
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.modal-input {
+    background-color: #000;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.modal-input:focus {
+    border-color: var(--primary-color);
+}
+
+.primary-btn {
+    background-color: var(--primary-color);
+    color: #000;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 10px;
+    border: none;
+}
+
+.primary-btn:hover {
+    opacity: 0.9;
+    background-color: var(--primary-color);
+    /* Maintain color */
 }

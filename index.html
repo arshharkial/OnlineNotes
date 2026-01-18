@@ -58,6 +58,23 @@
         </div>
     </div>
 
+    <!-- Insert Table Modal -->
+    <div id="table-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-table" class="close">&times;</span>
+            <h2>Insert Table</h2>
+            <div class="input-group">
+                <label for="table-rows">Rows:</label>
+                <input type="number" id="table-rows" value="3" min="1" class="modal-input">
+            </div>
+            <div class="input-group">
+                <label for="table-cols">Columns:</label>
+                <input type="number" id="table-cols" value="3" min="1" class="modal-input">
+            </div>
+            <button id="btn-insert-table" class="btn primary-btn">Insert</button>
+        </div>
+    </div>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
