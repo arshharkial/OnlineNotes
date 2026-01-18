@@ -38,6 +38,11 @@ marked.setOptions({
 
 // --- Table Insertion Logic ---
 const btnTable = document.getElementById('btn-table');
+const tableModal = document.getElementById('table-modal');
+const btnInsertTable = document.getElementById('btn-insert-table');
+const spanCloseTable = document.getElementById('close-table');
+const inputRows = document.getElementById('table-rows');
+const inputCols = document.getElementById('table-cols');
 
 function createTableMarkdown(rows, cols) {
     let table = '';
@@ -85,16 +90,23 @@ function insertTextAtCursor(text) {
     debouncedSaveLocal();
 }
 
+// Open Modal
 btnTable.addEventListener('click', () => {
-    // Simple Prompt for now - can be upgraded to modal later
-    const rows = prompt("Enter number of rows (e.g. 3):", "3");
-    if (rows === null) return;
+    tableModal.classList.remove('hidden');
+    inputRows.focus();
+});
 
-    const cols = prompt("Enter number of columns (e.g. 3):", "3");
-    if (cols === null) return;
+// Close Modal Helpers
+function closeTableModal() {
+    tableModal.classList.add('hidden');
+}
 
-    const r = parseInt(rows);
-    const c = parseInt(cols);
+spanCloseTable.addEventListener('click', closeTableModal);
+
+// Handle Insert
+btnInsertTable.addEventListener('click', () => {
+    const r = parseInt(inputRows.value);
+    const c = parseInt(inputCols.value);
 
     if (isNaN(r) || isNaN(c) || r < 1 || c < 1) {
         alert("Invalid input. Please enter numbers greater than 0.");
@@ -103,6 +115,14 @@ btnTable.addEventListener('click', () => {
 
     const tableMd = createTableMarkdown(r, c);
     insertTextAtCursor(tableMd);
+    closeTableModal();
+});
+
+// Close on outside click (Shared with Help Modal logic below, but specific check here)
+window.addEventListener('click', (event) => {
+    if (event.target === tableModal) {
+        closeTableModal();
+    }
 });
 
 
