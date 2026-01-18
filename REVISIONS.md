@@ -2,6 +2,12 @@
 
 The application now features explicit controls for font size adjustments and a comprehensive Revision History
 
+## V9.0
+-   **Architecture**: Shifted to **File-First** architecture. LocalStorage is now only a fallback/scratchpad.
+-   **Hybrid Sync**: Implemented `BroadcastChannel` for instant Cross-Tab sync and **File Polling** for Cross-Browser/External-Editor sync.
+-   **Auto-Save**: Edits are now auto-saved directly to the open file (debounced).
+-   **Safety**: Added **Conflict Detection**. If the file changes externally while you have unsaved edits, you get a warning instead of data loss.
+
 ## V8.1
 -   **Refinement**: Changed font size button step from 2px to 1px for finer control.
 
