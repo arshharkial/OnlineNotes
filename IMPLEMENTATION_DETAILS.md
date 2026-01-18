@@ -8,7 +8,7 @@ This application is a static client-side web app for writing Markdown notes. It 
 -   **Libraries**:
     -   `marked.js`: Markdown parsing.
     -   `highlight.js`: Code block syntax highlighting.
--   **Persistence**: `localStorage` (Cache) + File System Access API (Disk I/O).
+-   **Persistence**: File System Access API (Primary) + `localStorage` (Fallback/Cache).
 
 ## Architecture
 
@@ -17,43 +17,41 @@ This application is a static client-side web app for writing Markdown notes. It 
 -   **Main Area**:
     -   `.editor-container`: Contains the Line Number Gutter (`.line-numbers`) and the Textarea (`#note-editor`).
     -   `.preview-pane`: A `<div>` for rendering the parsed HTML.
--   **Modals**: Custom modals for "Insert Table" and "Help", hidden by default via CSS classes.
+-   **Modals**: Custom modals for "Insert Table" and "Help".
+-   **Notifications**: A floating Conflict Warning panel (`.conflict-warning`) for external change detection.
 
 ### 2. Styling (`style.css`)
 -   **Theming**:
-    -   Uses CSS Variables (`--bg-color`, `--text-color`, `--base-font-size`, etc.) for easy theming and dynamic adjustments.
+    -   Uses CSS Variables (`--bg-color`, `--text-color`, `--base-font-size`, etc.).
     -   **Base Font Size**: Controlled by `--base-font-size` (default 16px), allowing global scaling.
 -   **Dynamic Scaling**:
     -   Checkboxes and UI elements use `em` units to scale proportionally with the font size.
-    -   The Gutter uses fixed width but matches line-height.
+    -   The Gutter matches line-height.
 -   **Custom UI Components**:
-    -   **Checkboxes**: Completely redrawn using `appearance: none`, styled with green background/tick on checked state.
-    -   **Tables**: Zebra striping and clearer borders for better visibility.
-    -   **Animations**: Error shake animation for validation failures.
+    -   **Checkboxes**: Completely redrawn using `appearance: none`.
+    -   **Animations**: Slide-in animations for conflict warnings.
 
 ### 3. Logic (`app.js`)
 
 #### A. Markdown Processing
 -   **Marked.js Config**:
-    -   Custom Renderer enabled for finer control (e.g., custom checkboxes).
-    -   Integrates `highlight.js` in the `highlight` option for code blocks.
-    -   `gfm: true` and `breaks: true` enabled.
+    -   Custom Renderer enabled for checkboxes.
+    -   Integrates `highlight.js` for syntax highlighting.
+    -   `gfm: true` enabled.
 
 #### B. Editor Features
--   **Line Numbers**:
-    -   Calculated by counting newline characters in the text.
-    -   Synchronized scrolling between Textarea and Gutter.
--   **Insert Table**:
-    -   Generates a blank Markdown generic table structure based on generic Row/Col inputs.
-    -   Validation uses visual cues (CSS classes) rather than native alerts.
+-   **Line Numbers**: Synchronized scrolling between Textarea and Gutter.
+-   **Insert Table**: Generates a blank Markdown generic table structure.
 
-#### C. Settings & Persistence
--   **Font Size**:
-    -   Value stored in `localStorage` key `online-notes-font-size`.
-    -   On load, it applies the value to `document.documentElement.style.setProperty('--base-font-size', ...)`.
--   **File System**:
-    -   Uses `window.showSaveFilePicker` and `window.showOpenFilePicker`.
-    -   Fallbacks implemented for non-Chromium browsers (`<input type="file">`, Blob URL download).
+#### C. Persistence & Sync (V9 Architecture)
+-   **Hybrid Sync Model**:
+    -   **File-First**: Prioritizes saving directly to disk using `window.showSaveFilePicker`.
+    -   **Auto-Save**: Input is debounced (1s) and writes automatically to the open File Handle.
+    -   **Cross-Tab Sync**: Uses `BroadcastChannel` API (`online-notes-sync`) to propagate changes instantly between tabs in the same browser.
+    -   **External Sync**: Uses `setInterval` (2s) to Poll the file's `lastModified` timestamp. If it changes externally (e.g., VS Code), the app detects it.
 
-#### D. Auto-Save
--   **Debouncing**: Input events are debounced (1s) before saving to `localStorage` to prevent performance issues.
+#### D. Conflict Safety
+-   **Dirty State Tracking**: The app tracks if the user has unsaved changes (`isDirty`).
+-   **Resolution Strategy**:
+    -   **Clean State**: If an external change happens and the user is idle, the app **Auto-Reloads**.
+    -   **Dirty State**: If the user is typing and an external change happens, the app **Blocks Overwrite** and shows a warning UI ("External changes detected").

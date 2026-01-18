@@ -10,7 +10,11 @@ A simple, distraction-free, browser-based note-taking application with Markdown 
 -   **Pitch Black Theme**: High-contrast dark mode for coding/writing in low light.
 -   **Dynamic Font Size**: Adjust font size with simple +/- controls. Text and UI elements scale automatically.
 -   **Developer Friendly**: Line numbers, Syntax Highlighting, and Checklists support.
--   **Auto-Save**: Automatically saves to browser LocalStorage as a backup.
+-   **Robust Sync**:
+    -   **Auto-Save**: Saves directly to disk.
+    -   **Live Sync**: Updates instantly across tabs.
+    -   **External Watch**: Detects changes made by other editors (VS Code, etc.) and updates automatically.
+    -   **Safety**: Conflict detection prevents overwriting your work if the file changes externally while you type.
 
 [View Full Revision History](REVISIONS.md)
 
