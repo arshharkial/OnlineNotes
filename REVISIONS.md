@@ -7,6 +7,7 @@ The application now features explicit controls for font size adjustments and a c
 -   **Hybrid Sync**: Implemented `BroadcastChannel` for instant Cross-Tab sync and **File Polling** for Cross-Browser/External-Editor sync.
 -   **Auto-Save**: Edits are now auto-saved directly to the open file (debounced).
 -   **Safety**: Added **Conflict Detection**. If the file changes externally while you have unsaved edits, you get a warning instead of data loss.
+-   **Roadmap**: Created `DISTRIBUTION_PLAN.md` detailing the strategy for Single Executable (Desktop) and Mobile App releases.
 
 ## V8.1
 -   **Refinement**: Changed font size button step from 2px to 1px for finer control.

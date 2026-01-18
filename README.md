@@ -16,7 +16,7 @@ A simple, distraction-free, browser-based note-taking application with Markdown 
     -   **External Watch**: Detects changes made by other editors (VS Code, etc.) and updates automatically.
     -   **Safety**: Conflict detection prevents overwriting your work if the file changes externally while you type.
 
-[View Full Revision History](REVISIONS.md)
+[View Full Revision History](REVISIONS.md) | [View Distribution Plan](DISTRIBUTION_PLAN.md)
 
 ## How to Run
 
