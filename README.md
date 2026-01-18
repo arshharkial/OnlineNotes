@@ -1,29 +1,27 @@
 # Online Note
 
-A simple, distraction-free, browser-based note-taking application.
+A simple, distraction-free, browser-based note-taking application with Markdown support.
 
 ## Features
 
--   **Privacy First**: All data is stored locally in your browser (LocalStorage). No data is ever sent to a server.
--   **Offline Capable**: Works without an internet connection once loaded.
--   **Auto-Save**: Automatically saves your work as you type.
--   **Minimalist Design**: Clean interface to help you focus on writing.
--   **Dark/Light Mode**: Adapts to your system's color scheme.
+-   **Privacy First**: Data is stored locally. No server involved.
+-   **Markdown Support**: Write in Markdown and see a real-time preview (Split View).
+-   **File Persistence**: Save your notes to `.md` files on your disk and open them later. This allows you to keep your data even if you switch browsers or clear your cache.
+-   **Pitch Black Theme**: High-contrast dark mode for coding/writing in low light.
+-   **Auto-Save**: Automatically saves to browser LocalStorage as a backup.
 
 ## How to Run
 
 1.  Clone this repository or download the source code.
 2.  Open the `index.html` file in any modern web browser.
-3.  Start typing!
+3.  Start writing!
 
-That's it. There are no dependencies to install and no servers to run.
-
-## Browser Support
-
-Works on all modern browsers (Chrome, Firefox, Safari, Edge).
+## File System Access
+-   **Save to Disk**: Click the "Save to Disk" button to save your current note as a file on your computer.
+-   **Open File**: Click "Open File" to load a Markdown or Text file from your computer.
 
 ## Development
 
--   `index.html`: Structure of the application.
--   `style.css`: Styling and theme definitions.
--   `app.js`: Application logic (saving/loading data).
+-   `index.html`: Structure and layout.
+-   `style.css`: Pitch black theme and split-view styling.
+-   `app.js`: Logic for Markdown rendering (via `marked.js`), auto-save, and File I/O.

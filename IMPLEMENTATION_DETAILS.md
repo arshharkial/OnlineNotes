@@ -1,31 +1,33 @@
 # Implementation Details
 
 ## Overview
-This application is designed as a static client-side web application. It relies entirely on standard web technologies (HTML, CSS, JavaScript) and uses the browser's `localStorage` API for data persistence.
+This application is a static client-side web app for writing Markdown notes. It uses purely browser-native technologies alongside the `marked` library for parsing.
 
 ## Architecture
 
 ### 1. HTML Structure (`index.html`)
-The application uses a simple semantic HTML5 structure:
--   **Header**: Contains the application title and the save status indicator.
--   **Main**: Hosts the full-screen implementation of the `<textarea>` for note editing.
--   **Footer**: Displays a small privacy notice.
+-   **Layout**: Uses a Flexbox container for the main app.
+-   **Main Area**: Split into two panes:
+    -   `#note-editor`: A `<textarea>` for raw Markdown input.
+    -   `#markdown-preview`: A `<div>` for rendering the parsed HTML.
+-   **Controls**: Buttons for "Open File" and "Save to Disk".
 
 ### 2. Styling (`style.css`)
--   **CSS Variables**: Used for theming to easily support both light and dark modes.
--   **Dark Mode**: Implements `@media (prefers-color-scheme: dark)` to automatically switch colors based on the user's OS settings.
--   **Font**: Uses 'Inter' from Google Fonts for a clean, modern look.
--   **Responsiveness**: Flexbox is used to ensure the layout works on all screen sizes.
+-   **Theme**: "Pitch Black" theme.
+    -   Backgrounds are `#000000`.
+    -   Text is `#ffffff`.
+    -   Borders are subtle gray (`#333`).
+-   **Typography**: Base font size set to `16pt` for readability.
+-   **Split View**: A 50/50 split layout for editor and preview.
 
 ### 3. Logic (`app.js`)
--   **Storage Key**: Data is saved under the key `online-notes-data`.
--   **Debouncing**: To prevent excessive writes to local storage, the save operation is debounced by 1 second. This means the save function only triggers after the user has stopped typing for 1 second.
--   **Event Listeners**:
-    -   `input`: Detected on the textarea to trigger the save process and update the status to "Saving...".
-    -   `window` load: Triggers `loadNote()` to retrieve data from local storage when the page is opened.
+-   **Markdown**: Uses `marked.parse()` to convert input text to HTML in real-time.
+-   **Local Storage**: Continues to save to `online-notes-data` on every keystroke (debounced 1s) as a quick-resume cache.
+-   **File System Access API**:
+    -   `showSaveFilePicker()`: Allows the user to save the content directly to a file on their OS.
+    -   `showOpenFilePicker()`: Allows the user to open a local file.
+    -   **Fallbacks**: If the API is not supported (e.g., Firefox), it falls back to `<input type="file">` for opening and Blob downloads for saving.
 
-## Data Persistence
-The `localStorage` API provides a simple key-value store. This allows the data to persist even if the browser window is closed or the computer is shut down. Note that clearing the browser's cache/cookies "for all time" might clear this storage depending on the browser implementation.
-
-## Security & Privacy
-Since there is no backend, there is no risk of data interception in transit (once the page is loaded). However, data is stored in plain text in the browser's storage, so anyone with physical access to the unlocked browser could potentially read the note.
+## Data Persistence Strategy
+1.  **Short-term**: `localStorage` handles auto-saving so you don't lose work if you accidentally close the tab.
+2.  **Long-term / Portable**: The "Save to Disk" feature allows users to own their data as physical files, solving the browser-isolation limits of `localStorage`.
