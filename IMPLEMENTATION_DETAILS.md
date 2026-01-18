@@ -1,33 +1,59 @@
 # Implementation Details
 
 ## Overview
-This application is a static client-side web app for writing Markdown notes. It uses purely browser-native technologies alongside the `marked` library for parsing.
+This application is a static client-side web app for writing Markdown notes. It uses purely browser-native technologies alongside libraries for parsing and highlighting.
+
+## Tech Stack
+-   **Core**: HTML5, CSS3, JavaScript (ES6+).
+-   **Libraries**:
+    -   `marked.js`: Markdown parsing.
+    -   `highlight.js`: Code block syntax highlighting.
+-   **Persistence**: `localStorage` (Cache) + File System Access API (Disk I/O).
 
 ## Architecture
 
 ### 1. HTML Structure (`index.html`)
--   **Layout**: Uses a Flexbox container for the main app.
--   **Main Area**: Split into two panes:
-    -   `#note-editor`: A `<textarea>` for raw Markdown input.
-    -   `#markdown-preview`: A `<div>` for rendering the parsed HTML.
--   **Controls**: Buttons for "Open File" and "Save to Disk".
+-   **Layout**: Flexbox container (`.app-container`) split into Header and Main.
+-   **Main Area**:
+    -   `.editor-container`: Contains the Line Number Gutter (`.line-numbers`) and the Textarea (`#note-editor`).
+    -   `.preview-pane`: A `<div>` for rendering the parsed HTML.
+-   **Modals**: Custom modals for "Insert Table" and "Help", hidden by default via CSS classes.
 
 ### 2. Styling (`style.css`)
--   **Theme**: "Pitch Black" theme.
-    -   Backgrounds are `#000000`.
-    -   Text is `#ffffff`.
-    -   Borders are subtle gray (`#333`).
--   **Typography**: Base font size set to `16pt` for readability.
--   **Split View**: A 50/50 split layout for editor and preview.
+-   **Theming**:
+    -   Uses CSS Variables (`--bg-color`, `--text-color`, `--base-font-size`, etc.) for easy theming and dynamic adjustments.
+    -   **Base Font Size**: Controlled by `--base-font-size` (default 16px), allowing global scaling.
+-   **Dynamic Scaling**:
+    -   Checkboxes and UI elements use `em` units to scale proportionally with the font size.
+    -   The Gutter uses fixed width but matches line-height.
+-   **Custom UI Components**:
+    -   **Checkboxes**: Completely redrawn using `appearance: none`, styled with green background/tick on checked state.
+    -   **Tables**: Zebra striping and clearer borders for better visibility.
+    -   **Animations**: Error shake animation for validation failures.
 
 ### 3. Logic (`app.js`)
--   **Markdown**: Uses `marked.parse()` to convert input text to HTML in real-time.
--   **Local Storage**: Continues to save to `online-notes-data` on every keystroke (debounced 1s) as a quick-resume cache.
--   **File System Access API**:
-    -   `showSaveFilePicker()`: Allows the user to save the content directly to a file on their OS.
-    -   `showOpenFilePicker()`: Allows the user to open a local file.
-    -   **Fallbacks**: If the API is not supported (e.g., Firefox), it falls back to `<input type="file">` for opening and Blob downloads for saving.
 
-## Data Persistence Strategy
-1.  **Short-term**: `localStorage` handles auto-saving so you don't lose work if you accidentally close the tab.
-2.  **Long-term / Portable**: The "Save to Disk" feature allows users to own their data as physical files, solving the browser-isolation limits of `localStorage`.
+#### A. Markdown Processing
+-   **Marked.js Config**:
+    -   Custom Renderer enabled for finer control (e.g., custom checkboxes).
+    -   Integrates `highlight.js` in the `highlight` option for code blocks.
+    -   `gfm: true` and `breaks: true` enabled.
+
+#### B. Editor Features
+-   **Line Numbers**:
+    -   Calculated by counting newline characters in the text.
+    -   Synchronized scrolling between Textarea and Gutter.
+-   **Insert Table**:
+    -   Generates a blank Markdown generic table structure based on generic Row/Col inputs.
+    -   Validation uses visual cues (CSS classes) rather than native alerts.
+
+#### C. Settings & Persistence
+-   **Font Size**:
+    -   Value stored in `localStorage` key `online-notes-font-size`.
+    -   On load, it applies the value to `document.documentElement.style.setProperty('--base-font-size', ...)`.
+-   **File System**:
+    -   Uses `window.showSaveFilePicker` and `window.showOpenFilePicker`.
+    -   Fallbacks implemented for non-Chromium browsers (`<input type="file">`, Blob URL download).
+
+#### D. Auto-Save
+-   **Debouncing**: Input events are debounced (1s) before saving to `localStorage` to prevent performance issues.
