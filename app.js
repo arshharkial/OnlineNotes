@@ -24,12 +24,87 @@ renderer.code = function ({ text, lang, escaped }) {
         return `<pre><code class="hljs language-plaintext">${text}</code></pre>`;
     }
 };
+// Fix: Enable Checkboxes (Remove 'disabled' attribute)
+renderer.checkbox = function ({ checked }) {
+    return `<input type="checkbox" ${checked ? 'checked' : ''} class="task-list-item-checkbox">`;
+};
+
 // Use the renderer
 marked.use({ renderer });
 marked.setOptions({
     breaks: true,
     gfm: true
 });
+
+// --- Table Insertion Logic ---
+const btnTable = document.getElementById('btn-table');
+
+function createTableMarkdown(rows, cols) {
+    let table = '';
+
+    // Header Row
+    table += '|';
+    for (let c = 1; c <= cols; c++) {
+        table += ` Header ${c} |`;
+    }
+    table += '\n|';
+
+    // Separator Row
+    for (let c = 1; c <= cols; c++) {
+        table += ' --- |';
+    }
+    table += '\n';
+
+    // Body Rows
+    for (let r = 1; r <= rows; r++) {
+        table += '|';
+        for (let c = 1; c <= cols; c++) {
+            table += ` Row ${r} Col ${c} |`;
+        }
+        table += '\n';
+    }
+
+    return table + '\n';
+}
+
+function insertTextAtCursor(text) {
+    const start = noteEditor.selectionStart;
+    const end = noteEditor.selectionEnd;
+
+    const before = noteEditor.value.substring(0, start);
+    const after = noteEditor.value.substring(end);
+
+    noteEditor.value = before + text + after;
+
+    // Move cursor to end of inserted text
+    noteEditor.selectionStart = noteEditor.selectionEnd = start + text.length;
+
+    // Trigger updates
+    renderMarkdown(noteEditor.value);
+    updateLineNumbers();
+    debouncedSaveLocal();
+}
+
+btnTable.addEventListener('click', () => {
+    // Simple Prompt for now - can be upgraded to modal later
+    const rows = prompt("Enter number of rows (e.g. 3):", "3");
+    if (rows === null) return;
+
+    const cols = prompt("Enter number of columns (e.g. 3):", "3");
+    if (cols === null) return;
+
+    const r = parseInt(rows);
+    const c = parseInt(cols);
+
+    if (isNaN(r) || isNaN(c) || r < 1 || c < 1) {
+        alert("Invalid input. Please enter numbers greater than 0.");
+        return;
+    }
+
+    const tableMd = createTableMarkdown(r, c);
+    insertTextAtCursor(tableMd);
+});
+
 
 // --- Interactive Checkboxes Logic ---
 function toggleChecklist(index) {
