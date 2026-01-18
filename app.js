@@ -50,7 +50,7 @@ function createTableMarkdown(rows, cols) {
     // Header Row
     table += '|';
     for (let c = 1; c <= cols; c++) {
-        table += ` Header ${c} |`;
+        table += '   |';
     }
     table += '\n|';
 
@@ -64,7 +64,7 @@ function createTableMarkdown(rows, cols) {
     for (let r = 1; r <= rows; r++) {
         table += '|';
         for (let c = 1; c <= cols; c++) {
-            table += ` Row ${r} Col ${c} |`;
+            table += '   |';
         }
         table += '\n';
     }
